@@ -1,6 +1,8 @@
 import express from 'express'
-
 import dotenv from 'dotenv'
+
+import { db } from './db'
+import { users } from "./db/schema"
 
 dotenv.config()
 
@@ -42,7 +44,12 @@ app.get('/success', async function (req, res) {
 		},
 	})
 	const userData = await resp.json()
-  console.log(`🎈 userData:`,  userData)
+	const dbResp = await db
+		.insert(users)
+		.values({ githubId: userData.id, userName: userData.login })
+	console.log({ dbResp })
+	const allUsers = await db.select().from(users)
+	console.log({ allUsers })
 	res.render('pages/success', { userData })
 	// res.send("sucess")
 })
